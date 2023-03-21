@@ -6,6 +6,7 @@ import challenge.economy.management.demo.domain.InformeResponse;
 import challenge.economy.management.demo.model.entity.Factura;
 import challenge.economy.management.demo.model.repository.FacturaRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Month;
@@ -22,7 +23,10 @@ public class FacturaServiceImpl implements IFacturaService {
 
     @Override
     public void save(Factura factura) {
-        facturaRepo.save(factura);
+        if (factura.getFechaPago() != null) {
+            factura.setPagado(true);
+        }
+    facturaRepo.save(factura);
     }
 
     @Override
@@ -127,4 +131,12 @@ public class FacturaServiceImpl implements IFacturaService {
 
         return informeResponse;
     }
+
+    @Scheduled(cron = "*/10 * * * * *")
+    @Override
+    public List<Factura> listarFacturasImpagas() {
+        return facturaRepo.listarFacturasImpagas();
+    }
+
+
 }

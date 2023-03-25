@@ -42,7 +42,6 @@ public class FacturaController {
         return facturaService.informePeriodo(solicitudInformePeriodo);
     }
 
-
     @GetMapping("/impagas")
     public List<Factura> listarFacturasImpagas(){
         return facturaService.listarFacturasImpagas();

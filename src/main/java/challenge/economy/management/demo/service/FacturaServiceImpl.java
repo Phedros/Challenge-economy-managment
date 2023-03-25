@@ -60,8 +60,8 @@ public class FacturaServiceImpl implements IFacturaService {
 
         for (Factura factura : facturaRepo.findAll()){
 
-            if ((factura.getFechaPago() != null) && factura.getFechaPago().isBefore(solicitudInformePeriodo.getFechaInicio()) &&
-                    factura.getFechaPago().isAfter(solicitudInformePeriodo.getFechaFinal())){
+            if ((factura.getFechaPago() != null) && factura.getFechaPago().isAfter(solicitudInformePeriodo.getFechaInicio()) &&
+                    factura.getFechaPago().isBefore(solicitudInformePeriodo.getFechaFinal())){
 
                 //HashMap de los meses
                 Double valorDeFactura;
@@ -85,6 +85,8 @@ public class FacturaServiceImpl implements IFacturaService {
 */
                 //Gasto total
                 gastoTotal += factura.getDeuda();
+
+
 
             }
         }
@@ -129,14 +131,18 @@ public class FacturaServiceImpl implements IFacturaService {
         informeResponse.setGastoTotal(gastoTotal);
         informeResponse.setReporteMensual(informe);
 
+        //event
+
         return informeResponse;
     }
 
-    @Scheduled(cron = "*/10 * * * * *")
+    //@Scheduled(cron = "*/10 * * * * *")
     @Override
     public List<Factura> listarFacturasImpagas() {
         return facturaRepo.listarFacturasImpagas();
     }
+
+
 
 
 }

@@ -10,6 +10,7 @@ import java.util.HashMap;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class InformeMensual {
 
     private Month mes;

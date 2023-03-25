@@ -13,6 +13,7 @@ public interface IFacturaService {
     public Factura findById(Integer id);
     public void delete(Integer id);
     public InformeResponse informePeriodo(InformeRequest solicitudInformePeriodo);
+
     public List<Factura> listarFacturasImpagas();
 
 }

@@ -51,12 +51,12 @@ public class FacturaServiceImpl implements IFacturaService {
                 .collect(Collectors.groupingBy(factura -> factura.getFechaPago().getMonth(),
                         Collectors.summingDouble(Factura::getDeuda)));
 
-        //gasto total func
+        //gasto total
         Double gastoTotalF = facturasEnRango.stream()
                 .map(factura -> factura.getDeuda())
                 .reduce(0.0, Double::sum);
 
-        //Informe total func
+        //Informe total
         List<InformeMensual> informeTotal = new ArrayList<>();
         hashMeses2.forEach((month, aDouble) -> informeTotal.add(new InformeMensual((Month) month, aDouble)));
 

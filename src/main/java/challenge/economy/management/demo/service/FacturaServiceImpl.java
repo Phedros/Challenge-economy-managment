@@ -44,24 +44,13 @@ public class FacturaServiceImpl implements IFacturaService {
     @Override
     public InformeResponse informePeriodo(InformeRequest solicitudInformePeriodo) {
 
-        List<InformeMensual> reporteMensual;
-        Double gastoMaximo = 0.0;
-        Month mesGastoMaximo = null;
-        Double gastoMinimo = 99999999.0;
-        Month mesGastoMinimo = null;
-        Double gastoTotal = 0.0;
-        InformeResponse informeResponse = new InformeResponse();
-        Map<Month, Double> hashMeses = new HashMap<>();
-
-        //Functional
-
         List<Factura> facturas = (List<Factura>) facturaRepo.findAll();
-
         List<Factura> facturasEnRango = seleccionarFacturasEnRango(facturas, solicitudInformePeriodo);
 
         Map<Object, Double> hashMeses2 = facturasEnRango.stream()
                 .collect(Collectors.groupingBy(factura -> factura.getFechaPago().getMonth(),
                         Collectors.summingDouble(Factura::getDeuda)));
+
         //gasto total func
         Double gastoTotalF = facturasEnRango.stream()
                 .map(factura -> factura.getDeuda())
@@ -75,62 +64,19 @@ public class FacturaServiceImpl implements IFacturaService {
         Double gastoMaximoF = informeTotal.stream()
                 .map(informeMensual -> informeMensual.getGastoTotal())
                 .reduce(Double.MIN_VALUE, (x, y) -> x > y ? x : y);
-        //Mes Gasto Maximo
-        Month mesGastoMaximoF = getListaInformesOrdenada(informeTotal).get(getListaInformesOrdenada(informeTotal).size() - 1).getMes();
-
-        //Mes gasto minimo
-        Month mesGastoMinimoF = getListaInformesOrdenada(informeTotal).get(0).getMes();
 
         //Gasto minimo
         Double gastoMinimoF = informeTotal.stream()
                 .map(informeMensual -> informeMensual.getGastoTotal())
                 .reduce(Double.MAX_VALUE, (x, y) -> x < y ? x : y);
 
-        for (Factura factura : facturaRepo.findAll()) {
+        //Mes Gasto Maximo
+        Month mesGastoMaximoF = getListaInformesOrdenada(informeTotal).get(getListaInformesOrdenada(informeTotal).size() - 1).getMes();
 
-            if ((factura.getFechaPago() != null) && factura.getFechaPago().isAfter(solicitudInformePeriodo.getFechaInicio()) &&
-                    factura.getFechaPago().isBefore(solicitudInformePeriodo.getFechaFinal())) {
-                List<Factura> facturaPedro = new ArrayList<>();
-                //HashMap de los meses
-                Double valorDeFactura;
-                if (hashMeses.containsKey(factura.getFechaPago().getMonth())) {
-                    valorDeFactura = hashMeses.get(factura.getFechaPago().getMonth()) + factura.getDeuda();
-                    hashMeses.put(factura.getFechaPago().getMonth(), valorDeFactura);
-                } else hashMeses.put(factura.getFechaPago().getMonth(), factura.getDeuda());
+        //Mes Gasto minimo
+        Month mesGastoMinimoF = getListaInformesOrdenada(informeTotal).get(0).getMes();
 
-                //Gasto total
-                gastoTotal += factura.getDeuda();
-            }
-        }
-
-        //Informe mensual
-//        List<InformeMensual> informeTotal = new ArrayList<>(hashMeses.size());
-//        hashMeses.forEach((month, aDouble) -> informeTotal.add(new InformeMensual(month, aDouble)));
-
-        //mes gasto maximo
-        Double variable = 0.0;
-        for (InformeMensual inf : informeTotal) {
-            if (inf.getGastoTotal() > variable) {
-                variable = inf.getGastoTotal();
-                mesGastoMaximo = inf.getMes();
-            }
-        }
-
-        //mes gasto minimo
-        Double variable2 = 999999.0;
-        for (InformeMensual inf : informeTotal) {
-            if (inf.getGastoTotal() < variable2) {
-                variable2 = inf.getGastoTotal();
-                mesGastoMinimo = inf.getMes();
-            }
-        }
-
-        //gasto maximo
-        gastoMaximo = hashMeses.get(mesGastoMaximo);
-
-        //gasto minimo
-        gastoMinimo = hashMeses.get(mesGastoMinimo);
-
+        InformeResponse informeResponse = new InformeResponse();
 
         informeResponse.setGastoMinimo(gastoMinimoF);
         informeResponse.setMesGastoMinimo(mesGastoMinimoF);
@@ -138,8 +84,6 @@ public class FacturaServiceImpl implements IFacturaService {
         informeResponse.setMesGastoMaximo(mesGastoMaximoF);
         informeResponse.setGastoTotal(gastoTotalF);
         informeResponse.setReporteMensual(informeTotal);
-
-        //event
 
         return informeResponse;
     }

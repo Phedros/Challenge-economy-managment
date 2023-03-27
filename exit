@@ -1,0 +1,23 @@
+[33mcommit 880adfec443af32039b02dd1abb125f213d6ff46[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: Pedro Serra <pedroserra86@gmail.com>
+Date:   Mon Mar 27 01:47:50 2023 -0300
+
+    cuarto commit: Functional
+
+[33mcommit d25f8cb33791681591a9d80b460fe74c45bf0536[m
+Author: Pedro Serra <pedroserra86@gmail.com>
+Date:   Sat Mar 25 20:47:47 2023 -0300
+
+    tercer commit: unitary test
+
+[33mcommit 61924ae3a43e28a45a1f47e3efcff8e6a091f72f[m
+Author: Pedro Serra <pedroserra86@gmail.com>
+Date:   Tue Mar 21 04:00:06 2023 -0300
+
+    segundo commit: query + cron
+
+[33mcommit 0e17ea35e189a3e2aee81d79d3a76ddafb4d3dc1[m
+Author: Pedro Serra <pedroserra86@gmail.com>
+Date:   Sun Mar 19 18:57:48 2023 -0300
+
+    primer commit

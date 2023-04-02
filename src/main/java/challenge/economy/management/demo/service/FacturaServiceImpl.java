@@ -5,8 +5,6 @@ import challenge.economy.management.demo.domain.InformeRequest;
 import challenge.economy.management.demo.domain.InformeResponse;
 import challenge.economy.management.demo.model.entity.Factura;
 import challenge.economy.management.demo.model.repository.FacturaRepo;
-import jdk.swing.interop.SwingInterOpUtils;
-import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,9 +20,10 @@ public class FacturaServiceImpl implements IFacturaService {
     private FacturaRepo facturaRepo;
 
     @Override
-    public void save(Factura factura) {
+    public Optional<Factura> save(Factura factura) {
         factura.setPagado(factura.getFechaPago() != null);
         facturaRepo.save(factura);
+        return facturaRepo.findById(factura.getId());
     }
 
     @Override
@@ -38,8 +37,10 @@ public class FacturaServiceImpl implements IFacturaService {
     }
 
     @Override
-    public void delete(Integer id) {
+    public Optional<Factura> delete(Integer id) {
+        Optional<Factura> factura = facturaRepo.findById(id);
         facturaRepo.deleteById(id);
+        return factura;
     }
 
     @Override
@@ -98,24 +99,12 @@ public class FacturaServiceImpl implements IFacturaService {
         return facturaRepo.listarFacturasImpagas();
     }
 
-//    @Override
-//    public List<Factura> listarFacturasPorEmpresa(String empresa) {
-//        System.out.println(empresa);
-//        System.out.println(facturaRepo.listarFacturasPorEmpresa(empresa));
-//        return facturaRepo.listarFacturasPorEmpresa(empresa);
-//    }
-
     @Override
     public List<Factura> listarPorEmpresa(String empresa){
         return ((List<Factura>) facturaRepo.findAll()).stream()
                 .filter(factura -> Objects.equals(factura.getEmpresa(), empresa))
                 .collect(Collectors.toList());
     }
-
-//    @Override
-//    public List<Factura> listarFacturasPorPropietario(String propietario) {
-//        return facturaRepo.listarFacturasPorPropietario(propietario);
-//    }
 
     @Override
     public List<Factura> listarPorPropietario(String propietario){
@@ -126,12 +115,11 @@ public class FacturaServiceImpl implements IFacturaService {
 
     @Override
     public List<Factura> listarFacturasVencidas() {
-        return ((List<Factura>) facturaRepo.findAll()).stream()
+        return ((List<Factura>)facturaRepo.findAll()).stream()
                 .filter(factura -> factura.getVencimiento().isAfter(LocalDate.now()))
                 .filter(factura -> !factura.getPagado())
                 .collect(Collectors.toList());
     }
-
 
     //Metodos staticos
 
@@ -150,3 +138,18 @@ public class FacturaServiceImpl implements IFacturaService {
 
     }
 }
+
+
+
+//    @Override
+//    public List<Factura> listarFacturasPorEmpresa(String empresa) {
+//        System.out.println(empresa);
+//        System.out.println(facturaRepo.listarFacturasPorEmpresa(empresa));
+//        return facturaRepo.listarFacturasPorEmpresa(empresa);
+//    }
+
+
+//    @Override
+//    public List<Factura> listarFacturasPorPropietario(String propietario) {
+//        return facturaRepo.listarFacturasPorPropietario(propietario);
+//    }

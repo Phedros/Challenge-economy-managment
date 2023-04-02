@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/factura")
@@ -18,8 +19,8 @@ public class FacturaController {
     private IFacturaService facturaService;
 
     @PostMapping("/guardar")
-    public void guardar(@RequestBody Factura factura){
-        facturaService.save(factura);
+    public Optional<Factura> guardar(@RequestBody Factura factura){
+        return facturaService.save(factura);
     }
 
     @GetMapping("/listar")
@@ -33,8 +34,8 @@ public class FacturaController {
     }
 
     @DeleteMapping("/borrar/{id}")
-    public void borrar(@PathVariable Integer id){
-        facturaService.delete(id);
+    public Optional<Factura> borrar(@PathVariable Integer id){
+        return facturaService.delete(id);
     }
 
     @GetMapping("/informe")
@@ -46,20 +47,10 @@ public class FacturaController {
         return facturaService.listarFacturasImpagas();
     }
 
-//    @GetMapping("/empresa")
-//    public List<Factura> listarFacturasPorEmpresa(@RequestBody String empresa){
-//        return facturaService.listarFacturasPorEmpresa(empresa);
-//    }
-
     @GetMapping("/empresa/{empresa}")
     public List<Factura> listarPorEmpresa(@PathVariable String empresa) {
         return facturaService.listarPorEmpresa(empresa);
     }
-
-//    @GetMapping("/propietario")
-//    public List<Factura> listarFacturasPorPropietario(@RequestBody String propietario) {
-//        return facturaService.listarFacturasPorPropietario(propietario);
-//    }
 
     @GetMapping("/propietario/{propietario}")
     public List<Factura> listarPorPropietario(@PathVariable String propietario) {
@@ -72,3 +63,14 @@ public class FacturaController {
     }
 
 }
+
+
+//    @GetMapping("/empresa")
+//    public List<Factura> listarFacturasPorEmpresa(@RequestBody String empresa){
+//        return facturaService.listarFacturasPorEmpresa(empresa);
+//    }
+
+//    @GetMapping("/propietario")
+//    public List<Factura> listarFacturasPorPropietario(@RequestBody String propietario) {
+//        return facturaService.listarFacturasPorPropietario(propietario);
+//    }

@@ -41,10 +41,34 @@ public class FacturaController {
     public InformeResponse gastoPeriodo(@RequestBody InformeRequest solicitudInformePeriodo){
         return facturaService.informePeriodo(solicitudInformePeriodo);
     }
-
     @GetMapping("/impagas")
     public List<Factura> listarFacturasImpagas(){
         return facturaService.listarFacturasImpagas();
+    }
+
+//    @GetMapping("/empresa")
+//    public List<Factura> listarFacturasPorEmpresa(@RequestBody String empresa){
+//        return facturaService.listarFacturasPorEmpresa(empresa);
+//    }
+
+    @GetMapping("/empresa/{empresa}")
+    public List<Factura> listarPorEmpresa(@PathVariable String empresa) {
+        return facturaService.listarPorEmpresa(empresa);
+    }
+
+//    @GetMapping("/propietario")
+//    public List<Factura> listarFacturasPorPropietario(@RequestBody String propietario) {
+//        return facturaService.listarFacturasPorPropietario(propietario);
+//    }
+
+    @GetMapping("/propietario/{propietario}")
+    public List<Factura> listarPorPropietario(@PathVariable String propietario) {
+        return facturaService.listarPorPropietario(propietario);
+    }
+
+    @GetMapping("/vencidas")
+    public List<Factura> listarFacturasVencidas(){
+        return facturaService.listarFacturasVencidas();
     }
 
 }

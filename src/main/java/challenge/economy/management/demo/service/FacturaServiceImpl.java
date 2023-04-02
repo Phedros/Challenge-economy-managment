@@ -5,9 +5,12 @@ import challenge.economy.management.demo.domain.InformeRequest;
 import challenge.economy.management.demo.domain.InformeResponse;
 import challenge.economy.management.demo.model.entity.Factura;
 import challenge.economy.management.demo.model.repository.FacturaRepo;
+import jdk.swing.interop.SwingInterOpUtils;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,9 +23,7 @@ public class FacturaServiceImpl implements IFacturaService {
 
     @Override
     public void save(Factura factura) {
-        if (factura.getFechaPago() != null) {
-            factura.setPagado(true);
-        }
+        factura.setPagado(factura.getFechaPago() != null);
         facturaRepo.save(factura);
     }
 
@@ -57,8 +58,9 @@ public class FacturaServiceImpl implements IFacturaService {
                 .reduce(0.0, Double::sum);
 
         //Informe total
-        List<InformeMensual> informeTotal = new ArrayList<>();
-        hashMeses2.forEach((month, aDouble) -> informeTotal.add(new InformeMensual((Month) month, aDouble)));
+        List<InformeMensual> informeTotal = hashMeses2.entrySet().stream()
+                .map(e -> new InformeMensual((Month)e.getKey(), e.getValue()))
+                .collect(Collectors.toList());
 
         //Gasto maximo
         Double gastoMaximoF = informeTotal.stream()
@@ -70,11 +72,13 @@ public class FacturaServiceImpl implements IFacturaService {
                 .map(informeMensual -> informeMensual.getGastoTotal())
                 .reduce(Double.MAX_VALUE, (x, y) -> x < y ? x : y);
 
+        List<InformeMensual> listaInformesOrdenada = getListaInformesOrdenada(informeTotal);
+
         //Mes Gasto Maximo
-        Month mesGastoMaximoF = getListaInformesOrdenada(informeTotal).get(getListaInformesOrdenada(informeTotal).size() - 1).getMes();
+        Month mesGastoMaximoF = listaInformesOrdenada.get(listaInformesOrdenada.size() - 1).getMes();
 
         //Mes Gasto minimo
-        Month mesGastoMinimoF = getListaInformesOrdenada(informeTotal).get(0).getMes();
+        Month mesGastoMinimoF = listaInformesOrdenada.get(0).getMes();
 
         InformeResponse informeResponse = new InformeResponse();
 
@@ -94,6 +98,42 @@ public class FacturaServiceImpl implements IFacturaService {
         return facturaRepo.listarFacturasImpagas();
     }
 
+//    @Override
+//    public List<Factura> listarFacturasPorEmpresa(String empresa) {
+//        System.out.println(empresa);
+//        System.out.println(facturaRepo.listarFacturasPorEmpresa(empresa));
+//        return facturaRepo.listarFacturasPorEmpresa(empresa);
+//    }
+
+    @Override
+    public List<Factura> listarPorEmpresa(String empresa){
+        return ((List<Factura>) facturaRepo.findAll()).stream()
+                .filter(factura -> Objects.equals(factura.getEmpresa(), empresa))
+                .collect(Collectors.toList());
+    }
+
+//    @Override
+//    public List<Factura> listarFacturasPorPropietario(String propietario) {
+//        return facturaRepo.listarFacturasPorPropietario(propietario);
+//    }
+
+    @Override
+    public List<Factura> listarPorPropietario(String propietario){
+        return ((List<Factura>) facturaRepo.findAll()).stream()
+                .filter(factura -> Objects.equals(factura.getPropietario(), propietario))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Factura> listarFacturasVencidas() {
+        return ((List<Factura>) facturaRepo.findAll()).stream()
+                .filter(factura -> factura.getVencimiento().isAfter(LocalDate.now()))
+                .filter(factura -> !factura.getPagado())
+                .collect(Collectors.toList());
+    }
+
+
+    //Metodos staticos
 
     private static List<Factura> seleccionarFacturasEnRango(List<Factura> facturas, InformeRequest solicitudInformePeriodo) {
         return facturas.stream()

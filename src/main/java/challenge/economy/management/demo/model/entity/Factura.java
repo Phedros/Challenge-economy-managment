@@ -4,6 +4,7 @@ import challenge.economy.management.demo.domain.FormaDePago;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Getter
@@ -13,7 +14,7 @@ import java.time.LocalDate;
 @Builder
 @Entity
 @Table(name="factura")
-public class Factura {
+public class Factura implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
